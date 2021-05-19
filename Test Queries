@@ -1,0 +1,101 @@
+/*
+My SQL Practice
+Created By:
+Diego De Saint Malo
+Alessandra Carbonel
+*/
+
+
+# 1) Find the addresses of all houses currently listed.
+SELECT Listing.address
+FROM Listing, House
+WHERE Listing.address = House.address;
+
+# 2) Find the addresses and MLS numbers of all houses currently listed.
+SELECT address, mlsNumber
+FROM Listing
+WHERE address IN
+    (SELECT address
+    FROM House);
+ 
+
+
+# 3) Find the addresses of all 3-bedroom, 2-bathroom houses currently listed.
+SELECT address
+FROM Listing
+WHERE address IN 
+    (SELECT address
+    FROM House
+    WHERE numBedrooms = 3 AND numBathrooms = 2);
+
+
+
+
+# 4) Find the addresses and prices of all 3-bedroom, 2-bathroom houses with prices in the range
+# $100,000 to $250,000, with the results shown in descending order of price.
+SELECT address, price
+FROM House
+WHERE numBedrooms = 3 AND numBathrooms = 2 AND price > 100000 AND price < 250000;
+
+
+
+
+
+# 5) Find the addresses and prices of all business properties that are advertised as office space in
+# descending order of price.
+SELECT address, price
+FROM BusinessProperty
+WHERE type = 'office space';
+
+
+
+
+
+
+
+# 6) Find all the ids, names and phones of all agents, together with the names of their firms and the
+# dates when they started.
+
+SELECT Agent.agentId, Agent.name, Agent.phone, Firm.name, Agent.dateStarted
+FROM Agent, Firm
+WHERE Agent.firmId = Firm.id;
+
+
+
+
+#7) Find all the properties currently listed by agent with id “001” (or some other suitable id).
+SELECT Property.*
+FROM Property, Listing
+WHERE Listing.agentId = 001 AND Listing.address = Property.address;
+
+
+
+#8) Find all Agent.name-Buyer.name pairs where the buyer works with the agent, sorted
+# alphabetically by Agent.name.
+SELECT Agent.name, Buyer.name
+FROM Works_With, Agent, Buyer
+WHERE Works_With.agentId = Agent.agentId AND Works_With.buyerId = Buyer.id
+ORDER BY Agent.name ASC;
+
+# 9) For each agent, find the total number of buyers currently working with that agent, i.e., the output
+#should be Agent.id-count pairs.
+SELECT DISTINCT Agent.agentId,(SELECT COUNT(Works_With.buyerId)
+                                FROM Works_With
+                                WHERE Agent.agentId = Works_With.agentId
+                                ) AS "Count Pairs"
+FROM Agent;
+
+
+
+
+
+
+
+
+# 10) For some buyer that is interested in a house, where the buyer is identified by an id (e.g., “001”),
+#find all houses that meet the buyer’s preferences, with the results shown in descending order of
+#price.
+SELECT House.*
+FROM House, Buyer
+WHERE Buyer.id = 102 AND Buyer.propertyType = 'house' AND House.price >= Buyer.minimumPreferredPrice AND House.price <= maximumPreferredPrice AND House.numBedrooms = Buyer.bedrooms AND House.numBathrooms = Buyer.bathrooms
+ORDER BY House.price DESC;
